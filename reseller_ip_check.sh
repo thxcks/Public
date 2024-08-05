@@ -20,7 +20,8 @@ if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
 fi
 
 # Prompt for the reseller username
-read -p "Enter the reseller username: " reseller_username
+echo -n "Enter the reseller username: "
+read reseller_username
 
 # Exit if no username is provided
 if [ -z "$reseller_username" ]; then
