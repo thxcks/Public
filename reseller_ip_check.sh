@@ -10,7 +10,7 @@ show_help() {
   echo "You will be prompted to enter the reseller username once the script runs."
   echo
   echo "Example:"
-  echo "  ./check_a_records.sh"
+  echo "  ./reseller_ip_check.sh"
 }
 
 # Check for help argument
