@@ -5,7 +5,7 @@ show_help() {
   echo "Usage: $0"
   echo
   echo "This script retrieves the domains for each user under a specified cPanel reseller"
-  echo "and outputs their NS records."
+  echo "and outputs their NS records on the same line."
   echo
   echo "You will be prompted to enter the reseller username once the script runs."
   echo
@@ -39,12 +39,12 @@ if [ -z "$reseller_usernames" ]; then
   exit 1
 fi
 
-# Loop through each username and output the NS records for each domain
+# Loop through each username and output the NS records for each domain on the same line
 for user in $reseller_usernames; do
   domains=$(perl -F: -lane 'if ($F[1] =~ /'"$user"'/) {print $F[0]}' /etc/userdomains)
   for domain in $domains; do
-    # Retrieve the NS records for the domain
-    ns_records=$(dig +short "$domain" NS)
+    # Retrieve and format the NS records for the domain
+    ns_records=$(dig +short "$domain" NS | paste -sd '|' -)
     echo "$domain: $ns_records"
   done
 done
