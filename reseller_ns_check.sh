@@ -43,8 +43,10 @@ fi
 for user in $reseller_usernames; do
   domains=$(perl -F: -lane 'if ($F[1] =~ /'"$user"'/) {print $F[0]}' /etc/userdomains)
   for domain in $domains; do
-    # Retrieve and format the NS records for the domain
-    ns_records=$(dig +short "$domain" NS | paste -sd '|' -)
+    # Retrieve the NS records for the domain and format them on the same line
+    ns_records=$(dig +short "$domain" NS | tr '\n' '|')
+    # Remove the trailing separator
+    ns_records=${ns_records%|}
     echo "$domain: $ns_records"
   done
 done
