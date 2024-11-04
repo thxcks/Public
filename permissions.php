@@ -1,4 +1,40 @@
 <?php
+/*
+ * Directory Permission Manager
+ *
+ * This PHP script allows users on a cPanel server to browse and manage file permissions 
+ * within their home directory. It provides a simple web interface where users can navigate 
+ * through directories and set permissions on files and folders without needing command-line access.
+ *
+ * Features:
+ * - **Directory Browser**: Users can navigate through directories within their home folder.
+ * - **Set Permissions**: Provides a button to set permissions recursively within the selected folder. 
+ *   Sets 0755 permissions for directories and 0644 for files.
+ * - **Up a Level Navigation**: Includes a button to move one level up in the directory tree, 
+ *   restricted to the user's home directory.
+ * - **Dynamic Notifications**: Displays a confirmation message in the interface when permissions 
+ *   are successfully set, enhancing user feedback.
+ *
+ * Usage Instructions:
+ * - **Uploading the Script**: Place this PHP file anywhere within your cPanel home directory 
+ *   (e.g., /home/username/public_html).
+ * - **Navigating**: Use the "Browse Directories" section to navigate to a target directory. The "Up a Level" 
+ *   button allows moving one directory up without exiting the home directory.
+ * - **Setting Permissions**: Once in the desired directory, click the "Set Permissions" button to apply 
+ *   0755 permissions to directories and 0644 permissions to files within that directory.
+ * - **Security Restrictions**: The script restricts access to directories outside of the user's home 
+ *   directory, enhancing security.
+ *
+ * Requirements:
+ * - **cPanel Environment**: This script is optimized for cPanel servers, where each user has a 
+ *   separate home directory.
+ * - **PHP Executable Permissions**: Ensure that your server allows PHP scripts to execute shell 
+ *   commands like `find` and `chmod`, as these are required for setting permissions.
+ * 
+ * Note: This script is designed for ease of use and does not include authentication, as it is intended 
+ * for environments where users manage their own cPanel accounts.
+ */
+
 $message = '';
 
 // Set the base directory to the user's home directory by navigating one level up from the script location
