@@ -49,6 +49,13 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
   wget https://raw.githubusercontent.com/thxcks/Public/refs/heads/main/php/plugin-tester.php
   ```
 
+<h2>Access Log Viewer</h2>
+<p>This PHP script provides an interface to view and analyze server log files. It allows users to filter, sort, and paginate logs, making it easier to reead access logs.</p>
+
+  ```sh
+  wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/log-viewer.php
+  ```
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
