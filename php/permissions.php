@@ -8,7 +8,7 @@
  *
  * Features:
  * - **Directory Browser**: Users can navigate through directories within their home folder.
- * - **Set Permissions**: Provides a button to set permissions recursively within the selected folder. 
+ * - **Set Permissions**: Provides buttons to set permissions separately for directories and files within the selected folder. 
  *   Sets 0755 permissions for directories and 0644 for files.
  * - **Up a Level Navigation**: Includes a button to move one level up in the directory tree, 
  *   restricted to the user's home directory.
@@ -20,8 +20,8 @@
  *   (e.g., /home/username/public_html).
  * - **Navigating**: Use the "Browse Directories" section to navigate to a target directory. The "Up a Level" 
  *   button allows moving one directory up without exiting the home directory.
- * - **Setting Permissions**: Once in the desired directory, click the "Set Permissions" button to apply 
- *   0755 permissions to directories and 0644 permissions to files within that directory.
+ * - **Setting Permissions**: Once in the desired directory, click either the "Set Directories" button to apply 
+ *   0755 permissions to directories or the "Set Files" button to apply 0644 permissions to files within that directory.
  * - **Security Restrictions**: The script restricts access to directories outside of the user's home 
  *   directory, enhancing security.
  *
@@ -30,32 +30,110 @@
  *   separate home directory.
  * - **PHP Executable Permissions**: Ensure that your server allows PHP scripts to execute shell 
  *   commands like `find` and `chmod`, as these are required for setting permissions.
- * 
- * Note: This script is designed for ease of use and does not include authentication, as it is intended 
- * for environments where users manage their own cPanel accounts.
  */
+
+$dashboardPassword = "";
+session_start();
+
+// Set session timeout to 30 minutes
+$timeoutDuration = 1800;
+
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $timeoutDuration) {
+    session_unset();
+    session_destroy();
+    session_start();
+}
+$_SESSION['LAST_ACTIVITY'] = time();
+
+if (empty($dashboardPassword)) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
+        $dashboardPassword = $_POST['password'];
+        $fileContent = file_get_contents(__FILE__);
+        $updatedContent = preg_replace(
+            '/\$dashboardPassword = \".*?\";/',
+            '\$dashboardPassword = "' . addslashes($dashboardPassword) . '";',
+            $fileContent
+        );
+        file_put_contents(__FILE__, $updatedContent);
+        $_SESSION['authenticated'] = true;
+    } else {
+        echo '<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Set Dashboard Password</title>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        </head>
+        <body>
+            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                <div class="card p-4" style="width: 300px;">
+                    <h4 class="card-title text-center mb-4">Set Password</h4>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <input type="password" name="password" class="form-control" placeholder="Password" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Set Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </body>
+        </html>';
+        exit;
+    }
+} elseif (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true) {
+    // User already authenticated
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
+    if ($_POST['password'] === $dashboardPassword) {
+        $_SESSION['authenticated'] = true;
+    }
+}
+
+if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
+    echo '<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard Login</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+            <div class="card p-4" style="width: 300px;">
+                <h4 class="card-title text-center mb-4">Enter Password</h4>
+                <form method="POST">
+                    <div class="mb-3">
+                        <input type="password" name="password" class="form-control" placeholder="Password" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+    </html>';
+    exit;
+}
 
 $message = '';
 
-// Set the base directory to the user's home directory by navigating one level up from the script location
 $baseDir = realpath(__DIR__ . '/..');
 $currentDir = isset($_GET['dir']) ? realpath($baseDir . '/' . $_GET['dir']) : $baseDir;
 
-// Validate $currentDir to ensure it's within $baseDir and not empty
 if (!$currentDir || strpos($currentDir, $baseDir) !== 0) {
     $currentDir = $baseDir;
 }
 
-// Get the current directory name for display
 $currentDirName = basename($currentDir);
-
-// Calculate the "Up a Level" path, but ensure it does not go above $baseDir
 $parentDir = realpath($currentDir . '/..');
 $upLevelPath = ($parentDir && strpos($parentDir, $baseDir) === 0 && $currentDir !== $baseDir)
     ? str_replace($baseDir, '', $parentDir)
-    : ''; // Keeps the user at $baseDir if already at home directory
+    : '';
 
-// Function to list directories within the current directory
 function listDirectory($dir) {
     if (!$dir || !is_dir($dir)) {
         echo "Directory not found or invalid.";
@@ -63,7 +141,7 @@ function listDirectory($dir) {
     }
 
     $items = array_diff(scandir($dir), array('.', '..'));
-    echo "<ul>";
+    echo "<ul class='directories'>";
     foreach ($items as $item) {
         $path = $dir . '/' . $item;
         if (is_dir($path)) {
@@ -74,24 +152,22 @@ function listDirectory($dir) {
     echo "</ul>";
 }
 
-// If the form is submitted, set permissions in the selected directory
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selectedDir = realpath($baseDir . '/' . $_POST['path']);
     
-    // Additional security check
     if (strpos($selectedDir, $baseDir) !== 0) {
         die("Access denied.");
     }
 
-    // Commands to set permissions
-    $cmdDirectories = "find $selectedDir -type d -exec chmod 0755 {} \;";
-    $cmdFiles = "find $selectedDir -type f -exec chmod 0644 {} \;";
-
-    // Execute commands
-    exec($cmdDirectories, $outputDirectories, $returnCodeDirectories);
-    exec($cmdFiles, $outputFiles, $returnCodeFiles);
-
-    $message = "Permissions updated for $selectedDir";
+    if (isset($_POST['set_directories'])) {
+        $cmdDirectories = "find $selectedDir -type d -exec chmod 0755 {} \;";
+        exec($cmdDirectories, $outputDirectories, $returnCodeDirectories);
+        $message = "Directory permissions updated to 0755 for $selectedDir";
+    } elseif (isset($_POST['set_files'])) {
+        $cmdFiles = "find $selectedDir -type f -exec chmod 0644 {} \;";
+        exec($cmdFiles, $outputFiles, $returnCodeFiles);
+        $message = "File permissions updated to 0644 for $selectedDir";
+    }
 }
 ?>
 
@@ -99,55 +175,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Permission Fixer</title>
+    <title>Directory Permission Manager</title>
     <style>
-        body { display: flex; }
-        .content { width: 50%; padding: 20px; }
-        .instructions { border-left: 1px solid #ccc; padding-left: 20px; }
-        .notification { margin-top: 15px; padding: 10px; background-color: #e6ffe6; border: 1px solid #b3ffb3; color: #333; border-radius: 4px; }
+        body { font-family: Arial, sans-serif; background-color: #f7f7f7; }
+        .container {
+            display: flex;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 20px; /* Adds spacing between sections */
+        }
+        #main-content, #instructions {
+            flex: 1;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+        }
+        #instructions { border-left: 2px solid #ddd; }
+        h2 { color: #333; margin-bottom: 20px; font-size: 22px; }
+        .directories { list-style-type: none; padding: 0; }
+        .directories li { margin: 5px 0; }
+        .directories a { color: #007bff; text-decoration: none; }
+        .directories a:hover { text-decoration: underline; }
+        button { padding: 10px 20px; font-size: 14px; margin: 5px; cursor: pointer; border: none; border-radius: 4px; }
+        .button-set-dir { background-color: #28a745; color: #fff; }
+        .button-set-file { background-color: #007bff; color: #fff; }
+        #message { font-size: 16px; color: #333; margin-top: 15px; padding: 10px; background-color: #e6ffe6; border: 1px solid #b3ffb3; border-radius: 4px; }
     </style>
 </head>
 <body>
-    <div class="content">
-        <h2>Current Directory: <?php echo htmlspecialchars($currentDir); ?></h2>
-        
-        <!-- Up a Level Button -->
-        <p><a href="?dir=<?php echo urlencode($upLevelPath); ?>">⬆️ Up a Level</a></p>
-
-        <!-- Directory browsing section -->
-        <div>
-            <h3>Browse Directories:</h3>
-            <?php listDirectory($currentDir); ?>
-        </div>
-
-        <!-- Form to set permissions -->
-        <div>
-            <h3>Set Permissions <?php echo htmlspecialchars($currentDirName); ?>:</h3>
-            <form method="POST">
-                <input type="hidden" name="path" value="<?php echo str_replace(realpath($baseDir), '', realpath($currentDir)); ?>">
-                <button type="submit">Set Permissions to 0755 (directories) / 0644 (files)</button>
-            </form>
+    <div class="container">
+        <div id="main-content">
+            <h2>Directory Permission Manager</h2>
             
-            <?php if ($message): ?>
-                <div class="notification">
-                    <?php echo htmlspecialchars($message); ?>
-                </div>
-            <?php endif; ?>
+            <!-- Up a Level Button -->
+            <p><a href="?dir=<?php echo urlencode($upLevelPath); ?>" class="button">⬆️ Up a Level</a></p>
+            
+            <p class="description">Current Directory: <?php echo htmlspecialchars($currentDir); ?></p>
+
+            <!-- Directory browsing section -->
+            <div>
+                <h3>Browse Directories:</h3>
+                <?php listDirectory($currentDir); ?>
+            </div>
+
+            <!-- Form to set permissions -->
+            <div>
+                <h3>Set Permissions for <?php echo htmlspecialchars($currentDirName); ?>:</h3>
+                <form method="POST">
+                    <input type="hidden" name="path" value="<?php echo str_replace(realpath($baseDir), '', realpath($currentDir)); ?>">
+                    <button type="submit" name="set_directories" class="button-set-dir">Set Directories to 0755</button>
+                    <button type="submit" name="set_files" class="button-set-file">Set Files to 0644</button>
+                </form>
+                
+                <?php if ($message): ?>
+                    <div id="message"><?php echo htmlspecialchars($message); ?></div>
+                <?php endif; ?>
+            </div>
         </div>
-    </div>
-    
-    <!-- Instructions section -->
-    <div class="content instructions">
-        <h3>Instructions</h3>
-        <p>Use this tool to browse directories within your home folder and set file and directory permissions.</p>
-        <p>The user’s PHP execution settings must allow use of exec(), and find commands should be accessible on the server.</p>
-        <ul>
-            <li><b>Current Directory:</b> Shows the directory you’re currently in.</li>
-            <li><b>⬆️ Up a Level:</b> Click to go up one level in the directory tree. If you're already at the top level, it will simply refresh the page.</li>
-            <li><b>Browse Directories:</b> Click any folder name to navigate to it.</li>
-            <li><b>Set Permissions:</b> Click the button to set permissions to 0755 for directories and 0644 for files within the current folder.</li>
-        </ul>
-        <p>Note: Only files and folders within your home directory are accessible.</p>
+
+        <div id="instructions">
+            <h3>Instructions</h3>
+            <p>Use this tool to browse directories within your home folder and set file and directory permissions.</p>
+            <p>The user’s PHP execution settings must allow use of exec(), and find commands should be accessible on the server.</p>
+            <ul>
+             <li><b>Current Directory:</b> Shows the directory you’re currently in.</li>
+             <li><b>⬆️ Up a Level:</b> Click to go up one level in the directory tree. If you're already at the top level, it will simply refresh the page.</li>
+             <li><b>Browse Directories:</b> Click any folder name to navigate to it.</li>
+             <li><b>Set Permissions:</b> Click the button to set permissions to 0755 for directories and 0644 for files within the current folder.</li>
+            </ul>
+            <p>Note: Only files and folders within your home directory are accessible.</p>
+        </div>
     </div>
 </body>
 </html>
