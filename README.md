@@ -24,9 +24,10 @@ Most scripts are designed to run directly in your WordPress installation's docum
 
 Each script includes a simple login setup: on the first run, you’ll set a password, which you’ll use for future access to the tool.
 
-### List of Scripts and Usage
+## List of Scripts and Usage
 
 In the example, we use `wget` to download the tools, but you’re free to download and upload them using any method that suits your workflow.
+
 
 <h2>Plugin Tester</h2>
 <p>Disables each plugin in your installation one by one until the plugin conflict is resolved.</p>
