@@ -1,5 +1,6 @@
 <?php
 
+
 $dashboardPassword = "";
 session_start();
 
@@ -86,6 +87,7 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     </html>';
     exit;
 }
+
 
 // Load database details from wp-config.php
 $config_file = dirname(__FILE__) . '/wp-config.php';
@@ -200,27 +202,22 @@ if (isset($_GET['fetch_data'])) {
         .process-table th {
             background-color: #f2f2f2;
         }
-        #message {
-            font-size: 16px;
-            color: #333;
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #e6ffe6;
-            border: 1px solid #b3ffb3;
-            border-radius: 4px;
-        }
         .button-container {
             margin-bottom: 20px;
         }
-        .control-button {
-            padding: 10px 20px;
+        .control-button, .control-input {
+            padding: 10px;
             font-size: 14px;
             margin: 5px;
-            cursor: pointer;
             border: none;
             border-radius: 4px;
-            background-color: #007bff;
-            color: #fff;
+            cursor: pointer;
+        }
+        .control-button { background-color: #007bff; color: #fff; }
+        .control-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
@@ -230,12 +227,15 @@ if (isset($_GET['fetch_data'])) {
     <div id="instructions">
         <h2>Database Process viewer</h2>
         <p>Use this page to monitor processes the processes in your Wordpress Database.</p>
-        <p>This page refreshes automatically every 2 seconds, use the stop button to pause the refresh and review the data.</p>
+        <p>This page refreshes automatically every 2 seconds by default</p>
+		<p>Use the Start/Stop buttons to pause the refresh and review the data.</p>
     </div>
 
     <div class="button-container">
         <button class="control-button" onclick="startRefresh()">Start</button>
         <button class="control-button" onclick="stopRefresh()">Stop</button>
+        <label>Interval (seconds):</label>
+        <input type="number" id="intervalInput" class="control-input" value="2" min="1" onchange="updateInterval()" />
     </div>
 
     <div id="main-content">
@@ -248,6 +248,7 @@ if (isset($_GET['fetch_data'])) {
 
 <script>
     let refreshInterval;
+    let intervalSpeed = 2000; // Default to 2 seconds (2000 ms)
 
     // Function to fetch data and update the table
     function fetchProcessData() {
@@ -262,7 +263,7 @@ if (isset($_GET['fetch_data'])) {
     // Function to start the automatic refresh
     function startRefresh() {
         if (!refreshInterval) { // Ensure only one interval is running
-            refreshInterval = setInterval(fetchProcessData, 2000);
+            refreshInterval = setInterval(fetchProcessData, intervalSpeed);
             fetchProcessData(); // Immediately fetch data on start
         }
     }
@@ -271,6 +272,18 @@ if (isset($_GET['fetch_data'])) {
     function stopRefresh() {
         clearInterval(refreshInterval);
         refreshInterval = null; // Reset interval variable
+    }
+
+    // Update the refresh interval speed
+    function updateInterval() {
+        const newInterval = document.getElementById('intervalInput').value;
+        intervalSpeed = newInterval * 1000; // Convert seconds to milliseconds
+
+        // If the refresh is running, restart it with the new interval
+        if (refreshInterval) {
+            stopRefresh();
+            startRefresh();
+        }
     }
 
     // Start auto-refresh when the page loads
