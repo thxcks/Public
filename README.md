@@ -39,14 +39,14 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
 <p>Easily browse your file structure and set folder permissions to 755 and file permissions to 644 in bulk.</p>
 
   ```sh
-  wget https://raw.githubusercontent.com/thxcks/Public/refs/heads/main/php/plugin-tester.php
+  wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/permissions.php
   ```
 
 <h2>MYSQL Process Viewer</h2>
 <p>View real-time MySQL processes for your WordPress database with automatic refresh and control options.</p>
 
   ```sh
-  wget https://raw.githubusercontent.com/thxcks/Public/refs/heads/main/php/plugin-tester.php
+  wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/processes.php
   ```
 
 <h2>Access Log Viewer</h2>
