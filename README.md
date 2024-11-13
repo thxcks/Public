@@ -97,7 +97,7 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
 
 
   ```sh
-  wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/users.php
+  wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/backup.php
   ```
 
 
