@@ -118,6 +118,24 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     exit;
 }
 
+if (isset($_POST['destroy'])) {
+    // Get the current file path
+    $filePath = __FILE__;
+
+    // Display a message before deleting
+    echo "<p>Destroying tool...</p>";
+
+    // Delete the file itself
+    if (unlink($filePath)) {
+        echo "<p>Tool destroyed successfully.</p>";
+    } else {
+        echo "<p>Failed to destroy tool.</p>";
+    }
+
+    // Stop further execution
+    exit;
+}
+
 // Configuration
 define('LOG_DIRECTORY', dirname(__DIR__) . '/access-logs');
 
@@ -353,6 +371,15 @@ $logsToShow = array_slice($logs, $offset, $perPage);
                 ?>
             </tbody>
         </table>
+                    <table class="table">
+                <tboday> <center>        
+    <form method="post">
+    <button type="submit" name="destroy" onclick="return confirm('Are you sure? This action is irreversible.')">
+        Finished? Destroy tool now
+    </button>
+    </form>
+</center></tboday>
+            </table>
     </div>
 </div>
 </body>
