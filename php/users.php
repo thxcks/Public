@@ -1,23 +1,5 @@
 <?php
 
-if (isset($_POST['destroy'])) {
-    // Get the current file path
-    $filePath = __FILE__;
-
-    // Display a message before deleting
-    echo "<p>Destroying tool...</p>";
-
-    // Delete the file itself
-    if (unlink($filePath)) {
-        echo "<p>Tool destroyed successfully.</p>";
-    } else {
-        echo "<p>Failed to destroy tool.</p>";
-    }
-
-    // Stop further execution
-    exit;
-}
-
 // User Management Tool using WP-CLI
 
 $dashboardPassword = "";
@@ -104,6 +86,24 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
         </div>
     </body>
     </html>';
+    exit;
+}
+
+if (isset($_POST['destroy'])) {
+    // Get the current file path
+    $filePath = __FILE__;
+
+    // Display a message before deleting
+    echo "<p>Destroying tool...</p>";
+
+    // Delete the file itself
+    if (unlink($filePath)) {
+        echo "<p>Tool destroyed successfully.</p>";
+    } else {
+        echo "<p>Failed to destroy tool.</p>";
+    }
+
+    // Stop further execution
     exit;
 }
 
