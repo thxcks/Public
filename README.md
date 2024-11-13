@@ -24,9 +24,13 @@ Most scripts are designed to run directly in your WordPress installation's docum
 
 Each script includes a simple login setup: on the first run, you’ll set a password, which you’ll use for future access to the tool.
 
+> [!WARNING]  
+> These scripts are designed to be temporary, with minimal password protection as a basic deterrent. Not secure for extended online use—remove after use.
+
 ## List of Scripts and Usage
 
 In the example, we use `wget` to download the tools, but you’re free to download and upload them using any method that suits your workflow.
+
 
 
 <h2>Plugin Tester</h2>
