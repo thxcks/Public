@@ -12,8 +12,22 @@
 <h3 align="center">Wordpress Shared Hosting Self Help Tools</h3>
 
   <p align="center">
-A collection of tools designed to help users independently manage and troubleshoot common WordPress issues on shared hosting environments. Built to address typical WordPress tasks without the need for plugins, these tools optimize performance and avoid the bloat, slowdowns, and security risks often introduced by plugin-based solutions. This toolset empowers users to manage their sites efficiently, maintaining a lean, secure WordPress installation without relying on direct hosting provider intervention.  </p>
+A collection of tools designed to help users independently manage and troubleshoot common WordPress issues on shared hosting environments. Built to address typical WordPress tasks without the need for plugins, these tools optimize performance and avoid the bloat, slowdowns, and security risks often introduced by plugin-based solutions. This toolset empowers users to manage their sites efficiently, maintaining a lean, secure WordPress installation without relying on direct hosting provider intervention.  
+<br>
+<br>
+
+<a href="https://krystal.io/" style="display: block; text-align: center;">
+<img src="https://krystal.io/_next/static/media/logo.e7b0e828.svg" alt="Logo" style="display: block; margin: 0 auto;" width="250" height="150">
+</a>
+
+<p>Designed to be compatible with Krystal Hosting Packages!</p>
+
+
+</p>
+
+
 </div>
+
 
 
 
