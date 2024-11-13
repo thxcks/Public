@@ -43,6 +43,9 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
 <h2>File/Folder Permission Manager</h2>
 <p>Easily browse your file structure and set folder permissions to 755 and file permissions to 644 in bulk.</p>
 
+> [!TIP]
+> exec() is required for this script.
+
   ```sh
   wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/permissions.php
   ```
@@ -59,6 +62,17 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
 
   ```sh
   wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/log-viewer.php
+  ```
+
+<h2>Wordpress User Management Portal</h2>
+<p>Uses WP-CLI to manage the users in the database - includes, create, delete and password reset functions.</p>
+
+> [!TIP]
+> shell_exec & escapeshellarg are required for this script.
+
+
+  ```sh
+  wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/users.php
   ```
 
 
