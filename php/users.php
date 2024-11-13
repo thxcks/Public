@@ -348,7 +348,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <form method="post">
+<form method="post">
     <button type="submit" name="destroy" onclick="return confirm('Are you sure? This action is irreversible.')">
         Finished? Destroy tool now
     </button>
