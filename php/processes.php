@@ -179,22 +179,26 @@ if (isset($_GET['fetch_data'])) {
             background-color: #f2f2f2;
         }
         .button-container {
-            margin-bottom: 20px;
-        }
-        .control-button, .control-input {
-            padding: 10px;
-            font-size: 14px;
-            margin: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+    }
+        .control-button {
+           background-color: #007bff;
+           color: #fff;
+            padding: 8px 12px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-        }
-        .control-button { background-color: #007bff; color: #fff; }
-        .control-input {
-            width: 60px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
+    }
+    .control-input {
+        width: 60px;
+        padding: 6px;
+        text-align: center;
+    }
+    form {
+        display: inline; /* Ensure form does not break line */
+    }
     </style>
 </head>
 <body>
@@ -207,12 +211,18 @@ if (isset($_GET['fetch_data'])) {
 		<p>Use the Start/Stop buttons to pause the refresh and review the data.</p>
     </div>
 
-    <div class="button-container">
-        <button class="control-button" onclick="startRefresh()">Start</button>
-        <button class="control-button" onclick="stopRefresh()">Stop</button>
-        <label>Interval (seconds):</label>
-        <input type="number" id="intervalInput" class="control-input" value="2" min="1" onchange="updateInterval()" />
-    </div>
+<div class="button-container">
+    <button class="control-button" onclick="startRefresh()">Start</button>
+    <button class="control-button" onclick="stopRefresh()">Stop</button>
+    <label>Interval (seconds):</label>
+    <input type="number" id="intervalInput" class="control-input" value="2" min="1" onchange="updateInterval()" />
+    
+    <form method="post" style="display: inline;">
+        <button type="submit" name="destroy" class="control-button" onclick="return confirm('Are you sure? This action is irreversible.')">
+            Finished? Destroy tool now
+        </button>
+    </form>
+</div>
 
     <div id="main-content">
         <h2>Process Data</h2>
