@@ -1,91 +1,25 @@
 <?php
 
 
-$dashboardPassword = "";
-session_start();
+// Define the lock file path
+$lockFilePath = __DIR__ . '/ip_lock.lock';
 
-// Set session timeout to 30 minutes
-$timeoutDuration = 1800;
+// Get the visitor's IP address
+$visitorIp = $_SERVER['REMOTE_ADDR'];
 
-if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $timeoutDuration) {
-    session_unset();
-    session_destroy();
-    session_start();
-}
-$_SESSION['LAST_ACTIVITY'] = time();
-
-if (empty($dashboardPassword)) {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
-        $dashboardPassword = $_POST['password'];
-        $fileContent = file_get_contents(__FILE__);
-        $updatedContent = preg_replace(
-            '/\$dashboardPassword = \".*?\";/',
-            '\$dashboardPassword = "' . addslashes($dashboardPassword) . '";',
-            $fileContent
-        );
-        file_put_contents(__FILE__, $updatedContent);
-        $_SESSION['authenticated'] = true;
-    } else {
-        echo '<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Set Dashboard Password</title>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        </head>
-        <body>
-            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-                <div class="card p-4" style="width: 300px;">
-                    <h4 class="card-title text-center mb-4">Set Password</h4>
-                    <form method="POST">
-                        <div class="mb-3">
-                            <input type="password" name="password" class="form-control" placeholder="Password" required>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Set Password</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </body>
-        </html>';
-        exit;
-    }
-} elseif (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true) {
-    // User already authenticated
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
-    if ($_POST['password'] === $dashboardPassword) {
-        $_SESSION['authenticated'] = true;
-    }
+// Check if the lock file exists
+if (!file_exists($lockFilePath)) {
+    // If not, create it and store the current visitor's IP
+    file_put_contents($lockFilePath, $visitorIp);
 }
 
-if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
-    echo '<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dashboard Login</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    </head>
-    <body>
-        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-            <div class="card p-4" style="width: 300px;">
-                <h4 class="card-title text-center mb-4">Enter Password</h4>
-                <form method="POST">
-                    <div class="mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="Password" required>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </body>
-    </html>';
-    exit;
+// Read the locked IP from the file
+$lockedIp = file_get_contents($lockFilePath);
+
+// Check if the current visitor's IP matches the locked IP
+if (trim($lockedIp) !== $visitorIp) {
+    // Deny access for other IPs
+    exit("Access denied. This tool is locked to another IP.");
 }
 
 
