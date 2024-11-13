@@ -89,6 +89,17 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
   wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/users.php
   ```
 
+<h2>Wordpress Simple Backup Script</h2>
+<p>This tool creates a downloadable backup of your website files and database, with options to exclude wp-content or uploads.</p>
+
+> [!TIP]
+> shell_exec or exec & escapeshellarg are required for this script.
+
+
+  ```sh
+  wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/users.php
+  ```
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
