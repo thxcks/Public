@@ -89,6 +89,24 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     exit;
 }
 
+if (isset($_POST['destroy'])) {
+    // Get the current file path
+    $filePath = __FILE__;
+
+    // Display a message before deleting
+    echo "<p>Destroying tool...</p>";
+
+    // Delete the file itself
+    if (unlink($filePath)) {
+        echo "<p>Tool destroyed successfully.</p>";
+    } else {
+        echo "<p>Failed to destroy tool.</p>";
+    }
+
+    // Stop further execution
+    exit;
+}
+
 
 // Function to list users with WP-CLI
 function list_wp_users() {
@@ -329,6 +347,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
+
+    <form method="post">
+    <button type="submit" name="destroy" onclick="return confirm('Are you sure? This action is irreversible.')">
+        Finished? Destroy tool now
+    </button>
+</form>
+
 
     <script>
         function toggleAccordion(header) {
