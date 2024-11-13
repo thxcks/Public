@@ -2,8 +2,6 @@
 
 // User Management Tool using WP-CLI
 
-
-
 if (isset($_POST['destroy'])) {
     // Get the current file path
     $filePath = __FILE__;
