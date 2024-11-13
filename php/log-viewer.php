@@ -55,16 +55,40 @@ if (trim($lockedIp) !== $visitorIp) {
 if (isset($_POST['destroy'])) {
     // Get the current file path
     $filePath = __FILE__;
+    $lockFilePath = dirname(__FILE__) . '/ip_lock.lock';
 
-    // Display a message before deleting
-    echo "<p>Destroying tool...</p>";
+    echo "
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        #message-container { text-align: center; background-color: #fff; padding: 40px; border-radius: 8px; box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1); max-width: 400px; }
+        .success-icon { font-size: 50px; color: #28a745; margin-bottom: 15px; }
+        h2 { color: #333; font-size: 22px; margin: 0; }
+        p { color: #666; font-size: 16px; margin-top: 5px; }
+    </style>
+    <div id='message-container'>";
+
+    // Display success icon and friendly message
+    echo "<div class='success-icon'>✓</div>";
+
+    // Delete the ip_lock.lock file
+    if (file_exists($lockFilePath) && unlink($lockFilePath)) {
+        echo "<h2>Cleanup Successful</h2>";
+        echo "<p>The lock file was removed successfully.</p>";
+    } else {
+        echo "<h2>Cleanup Partial</h2>";
+        echo "<p>The lock file was not found or couldn't be removed.</p>";
+    }
 
     // Delete the file itself
     if (unlink($filePath)) {
-        echo "<p>Tool destroyed successfully.</p>";
+        echo "<h2>Tool Deleted</h2>";
+        echo "<p>This tool has been removed from the system.</p>";
     } else {
-        echo "<p>Failed to destroy tool.</p>";
+        echo "<h2>Deletion Failed</h2>";
+        echo "<p>There was an issue deleting this tool.</p>";
     }
+
+    echo "</div>";
 
     // Stop further execution
     exit;
