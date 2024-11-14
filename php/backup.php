@@ -61,6 +61,72 @@ if (isset($_POST['destroy'])) {
     // Stop further execution
     exit;
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['backup'])) {
+    $excludeWpContent = isset($_POST['exclude_wp_content']);
+    $excludeUploads = isset($_POST['exclude_uploads']);
+
+    // Define backup directory and zip file path
+    $backupDir = __DIR__;
+    $zipFilePath = $backupDir . '/backup.zip';
+
+    // Load database credentials from wp-config.php
+    $wpConfig = file_get_contents($backupDir . '/wp-config.php');
+    preg_match("/define\('DB_NAME', '(.*)'\);/", $wpConfig, $dbname);
+    preg_match("/define\('DB_USER', '(.*)'\);/", $wpConfig, $dbuser);
+    preg_match("/define\('DB_PASSWORD', '(.*)'\);/", $wpConfig, $dbpass);
+    preg_match("/define\('DB_HOST', '(.*)'\);/", $wpConfig, $dbhost);
+
+    $dbname = $dbname[1];
+    $dbuser = $dbuser[1];
+    $dbpass = $dbpass[1];
+    $dbhost = $dbhost[1];
+
+    // Dump the MySQL database
+    $dumpFile = $backupDir . '/database_backup.sql';
+    $dumpCommand = "mysqldump --user='$dbuser' --password='$dbpass' --host='$dbhost' $dbname > $dumpFile";
+    shell_exec($dumpCommand);
+
+    // Create a new ZipArchive
+    $zip = new ZipArchive();
+    if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+        echo '<div class="error-message">Unable to create zip file.</div>';
+        exit;
+    }
+
+    // Add files and folders to the zip archive, excluding specified directories
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($backupDir, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::SELF_FIRST
+    );
+
+    foreach ($files as $file) {
+        $filePath = realpath($file);
+        $relativePath = substr($filePath, strlen($backupDir) + 1);
+
+        // Exclude directories based on user selection
+        if (($excludeWpContent && strpos($relativePath, 'wp-content') === 0) ||
+            ($excludeUploads && strpos($relativePath, 'wp-content/uploads') === 0)) {
+            continue;
+        }
+
+        if (is_dir($filePath)) {
+            $zip->addEmptyDir($relativePath);
+        } else {
+            $zip->addFile($filePath, $relativePath);
+        }
+    }
+
+    // Add the database dump file
+    $zip->addFile($dumpFile, 'database_backup.sql');
+    $zip->close();
+
+    // Provide the download link and clean up
+    echo '<div class="success-message">Backup created successfully. <a href="backup.zip" download>Download Backup</a></div>';
+
+    // Clean up: Delete temporary files
+    unlink($dumpFile);
+}
 ?>
 
 <!DOCTYPE html>
@@ -92,86 +158,18 @@ if (isset($_POST['destroy'])) {
             <p><strong>File Location:</strong> <?php echo __DIR__; ?></p>
         </div>
 
-        <form method="POST">
+        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <label><input type="checkbox" name="exclude_wp_content"> Exclude wp-content directory</label>
             <label><input type="checkbox" name="exclude_uploads"> Exclude uploads directory</label>
             <button type="submit" name="backup">Create Backup</button>
         </form>
-
-        <?php
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['backup'])) {
-            $excludeWpContent = isset($_POST['exclude_wp_content']);
-            $excludeUploads = isset($_POST['exclude_uploads']);
-
-            // Define backup directory and zip file path
-            $backupDir = __DIR__;
-            $zipFilePath = $backupDir . '/backup.zip';
-
-            // Load database credentials from wp-config.php
-            $wpConfig = file_get_contents($backupDir . '/wp-config.php');
-            preg_match("/define\('DB_NAME', '(.*)'\);/", $wpConfig, $dbname);
-            preg_match("/define\('DB_USER', '(.*)'\);/", $wpConfig, $dbuser);
-            preg_match("/define\('DB_PASSWORD', '(.*)'\);/", $wpConfig, $dbpass);
-            preg_match("/define\('DB_HOST', '(.*)'\);/", $wpConfig, $dbhost);
-
-            $dbname = $dbname[1];
-            $dbuser = $dbuser[1];
-            $dbpass = $dbpass[1];
-            $dbhost = $dbhost[1];
-
-            // Dump the MySQL database
-            $dumpFile = $backupDir . '/database_backup.sql';
-            $dumpCommand = "mysqldump --user='$dbuser' --password='$dbpass' --host='$dbhost' $dbname > $dumpFile";
-            shell_exec($dumpCommand);
-
-            // Create a new ZipArchive
-            $zip = new ZipArchive();
-            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-                echo '<div class="error-message">Unable to create zip file.</div>';
-                exit;
-            }
-
-            // Add files and folders to the zip archive, excluding specified directories
-            $files = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($backupDir, RecursiveDirectoryIterator::SKIP_DOTS),
-                RecursiveIteratorIterator::SELF_FIRST
-            );
-
-            foreach ($files as $file) {
-                $filePath = realpath($file);
-                $relativePath = substr($filePath, strlen($backupDir) + 1);
-
-                // Exclude directories based on user selection
-                if (($excludeWpContent && strpos($relativePath, 'wp-content') === 0) ||
-                    ($excludeUploads && strpos($relativePath, 'wp-content/uploads') === 0)) {
-                    continue;
-                }
-
-                if (is_dir($filePath)) {
-                    $zip->addEmptyDir($relativePath);
-                } else {
-                    $zip->addFile($filePath, $relativePath);
-                }
-            }
-
-            // Add the database dump file
-            $zip->addFile($dumpFile, 'database_backup.sql');
-            $zip->close();
-
-            // Provide the download link and clean up
-            echo '<div class="success-message">Backup created successfully. <a href="backup.zip" download>Download Backup</a></div>';
-
-            // Clean up: Delete temporary files
-            unlink($dumpFile);
-        }
-        ?>
+        
+        <!-- Destroy Tool Button -->
+        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+            <button type="submit" name="destroy" onclick="return confirm('Are you sure? This action is irreversible.')">
+                Finished? Destroy tool now
+            </button>
+        </form>
     </div>
-    <center>        
-    <form method="post">
-    <button type="submit" name="destroy" onclick="return confirm('Are you sure? This action is irreversible.')">
-        Finished? Destroy tool now
-    </button>
-    </form>
-</center>
 </body>
 </html>
