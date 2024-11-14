@@ -100,6 +100,17 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
   wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/backup.php
   ```
 
+<h2>Wordpress Domain Changer</h2>
+<p>This tool changes the domain name in your Wordpress database including Table updates.</p>
+
+> [!TIP]
+> shell_exec or exec & escapeshellarg are required for this script.
+
+
+  ```sh
+  wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/changeurl.php
+  ```
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
