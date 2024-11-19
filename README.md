@@ -47,13 +47,6 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
 
 
 
-<h2>Plugin Tester</h2>
-<p>Disables each plugin in your installation one by one until the plugin conflict is resolved.</p>
-
-  ```sh
-  wget https://raw.githubusercontent.com/thxcks/Public/refs/heads/main/php/plugin-tester.php
-  ```
-
 <h2>File/Folder Permission Manager</h2>
 <p>Easily browse your file structure and set folder permissions to 755 and file permissions to 644 in bulk.</p>
 
@@ -101,7 +94,9 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
   ```
 
 <h2>Wordpress Domain Changer</h2>
-<p>This tool changes the domain name in your Wordpress database including Table updates.</p>
+<p>This tool changes the domain name in your Wordpress database including Table updates.
+
+Can also swap http:// to https:// without changing the domain name</p>
 
 > [!TIP]
 > shell_exec or exec & escapeshellarg are required for this script.
@@ -109,6 +104,13 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
 
   ```sh
   wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/changeurl.php
+  ```
+
+<h2>Plugin Tester</h2>
+<p>Disables each plugin in your installation one by one until the plugin conflict is resolved.</p>
+
+  ```sh
+  wget https://raw.githubusercontent.com/thxcks/Public/refs/heads/main/php/plugin-tester.php
   ```
 
 
