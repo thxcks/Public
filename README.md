@@ -36,10 +36,12 @@ A collection of tools designed to help users independently manage and troublesho
 
 Most scripts are designed to run directly in your WordPress installation's document root. Simply upload the file, then access it via your browser to begin using its functionality.
 
-The script records your IP address during its initial run and restricts access exclusively to that IP until the 'ip_lock.lock' file is removed.
+The script records your IP address during its initial run and restricts access exclusively to that IP until the 'ip_lock.lock' file is removed either manually or by using the "Destroy" Button.
 
 > [!WARNING]  
 > These scripts are designed to be temporary, with minimal IP protection as a basic deterrent. Not secure for extended online use—remove after use.
+>
+> Each script has a Destroy button to remove the tool and corresponding files after use!
 
 ## List of Scripts and Usage
 
