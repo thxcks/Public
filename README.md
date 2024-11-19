@@ -59,18 +59,18 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
   wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/permissions.php
   ```
 
-<h2>MYSQL Process Viewer</h2>
-<p>View real-time MySQL processes for your WordPress database with automatic refresh and control options.</p>
-
-  ```sh
-  wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/processes.php
-  ```
-
 <h2>Access Log Viewer</h2>
 <p>This PHP script provides an interface to view and analyze server log files. It allows users to filter, sort, and paginate logs, making it easier to reead access logs.</p>
 
   ```sh
   wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/log-viewer.php
+  ```
+
+<h2>Wordpress MYSQL Process Viewer</h2>
+<p>View real-time MySQL processes for your WordPress database with automatic refresh and control options.</p>
+
+  ```sh
+  wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/processes.php
   ```
 
 <h2>Wordpress User Management Portal</h2>
