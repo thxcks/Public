@@ -108,7 +108,7 @@ Can also swap http:// to https:// without changing the domain name</p>
   wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/changeurl.php
   ```
 
-<h2>Plugin Tester</h2>
+<h2>Wordpress Plugin Tester</h2>
 <p>Disables each plugin in your installation one by one until the plugin conflict is resolved.</p>
 
   ```sh
