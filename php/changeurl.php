@@ -36,7 +36,7 @@ if (isset($_POST['destroy'])) {
     <div id='message-container'>";
 
     // Display success icon and friendly message
-    echo "<div class='success-icon'>✓</div>";
+    echo "<div class='success-icon'>&#10003;</div>";
 
     // Delete the ip_lock.lock file
     if (file_exists($lockFilePath) && unlink($lockFilePath)) {
@@ -101,7 +101,16 @@ if (isset($_POST['destroy'])) {
         }
 
         // Handle form submission
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && $current_domain) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['convert']) && $current_domain) {
+            $command = "wp search-replace 'http://$current_domain' 'https://$current_domain' --all-tables-with-prefix";
+            exec($command . " 2>&1", $output, $status);
+
+            if ($status === 0) {
+                echo "<div class='success-message'>Content successfully converted to HTTPS for $current_domain.</div>";
+            } else {
+                echo "<div class='error-message'>Error: Unable to convert content to HTTPS. Check WP-CLI configuration.</div>";
+            }
+        } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $current_domain) {
             $new_domain = filter_input(INPUT_POST, 'new_domain', FILTER_SANITIZE_URL);
             $new_domain = preg_replace("(^https?://)", "", $new_domain); // Strip http/https from input
 
@@ -140,6 +149,15 @@ if (isset($_POST['destroy'])) {
             <input type="text" name="current_domain" placeholder="Current Domain" value="<?= htmlspecialchars($current_domain); ?>" required readonly>
             <input type="text" name="new_domain" placeholder="New Domain" required>
             <button type="submit">Change Domain</button>
+        </form>
+
+        <h1>Convert Content from HTTP to HTTPS</h1>
+        <p class="description">Ensure your content is served securely by converting all links to HTTPS.</p>
+        
+        <form method="post">
+            <input type="text" name="http_domain" placeholder="HTTP Domain" value="<?= 'http://' . htmlspecialchars($current_domain); ?>" readonly>
+            <input type="text" name="https_domain" placeholder="HTTPS Domain" value="<?= 'https://' . htmlspecialchars($current_domain); ?>" readonly>
+            <button type="submit" name="convert">Convert to HTTPS</button>
         </form>
     </div>
     
