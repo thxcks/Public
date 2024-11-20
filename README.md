@@ -77,7 +77,7 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
 <p>Provides detailed insights into your current disk usage and inode consumption.</p>
 
   ```sh
- [ wget https://raw.githubusercontent.com/thxcks/Shared-Toolkit/refs/heads/main/php/files.php
+ wget https://raw.githubusercontent.com/thxcks/Shared-Toolkit/refs/heads/main/php/files.php
   ```
 
 <h2>Wordpress MYSQL Process Viewer</h2>
