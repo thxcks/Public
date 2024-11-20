@@ -66,6 +66,20 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
   wget https://raw.githubusercontent.com/thxcks/WP-tools/refs/heads/main/php/log-viewer.php
   ```
 
+<h2>Email Header Analyzer</h2>
+<p>This PHP script provides an interface to view and analyze Email Headers, shows important information as well as email hops</p>
+
+  ```sh
+  wget https://raw.githubusercontent.com/thxcks/Shared-Toolkit/refs/heads/main/php/analyzer.php
+  ```
+
+<h2>File Usage/Inode Usage</h2>
+<p>Provides detailed insights into your current disk usage and inode consumption.</p>
+
+  ```sh
+ [ wget https://raw.githubusercontent.com/thxcks/Shared-Toolkit/refs/heads/main/php/files.php
+  ```
+
 <h2>Wordpress MYSQL Process Viewer</h2>
 <p>View real-time MySQL processes for your WordPress database with automatic refresh and control options.</p>
 
