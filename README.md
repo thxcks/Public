@@ -80,6 +80,13 @@ In the example, we use `wget` to download the tools, but you’re free to downlo
  wget https://raw.githubusercontent.com/thxcks/Shared-Toolkit/refs/heads/main/php/files.php
   ```
 
+<h2>Server Information Tool</h2>
+<p>This tool provides detailed server and PHP environment information, tests database connectivity, and displays key database details, helping diagnose and optimise hosting setups efficiently.</p>
+
+  ```sh
+ wget https://raw.githubusercontent.com/thxcks/Shared-Toolkit/refs/heads/main/php/info.php
+  ```
+
 <h2>Wordpress MYSQL Process Viewer</h2>
 <p>View real-time MySQL processes for your WordPress database with automatic refresh and control options.</p>
 
